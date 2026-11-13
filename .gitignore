@@ -1,10 +1,19 @@
-# Bevat gebruikersnaam en wachtwoord: NOOIT naar GitHub
+# Bevat gebruikersnamen en wachtwoorden: NOOIT naar GitHub
 appsettings.json
 
 # Snelkoppelingen bevatten een vast pad van jouw eigen pc
 *.lnk
 
-# Eigen testgegevens en exports
+# Eigen testgegevens en exports (bevatten persoonsgegevens)
 TestWaarden.txt
 SKV_controle_*.txt
+Partijcontrole_*.txt
 *.pdf
+VKI_*.xml
+VKI_*.html
+
+# Uitvoer van Test-VkiCredentials.ps1
+vki.wsdl
+vki-request.xml
+vki-response.xml
+/test

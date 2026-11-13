@@ -1,19 +1,44 @@
-﻿SKV CERTIFICAAT CHECKER - LEESMIJ
-=================================
+﻿PARTIJCONTROLE VEAL - LEESMIJ
+=============================
+(Voorheen: SKV Certificaat Checker)
 
 Wat doet het?
 -------------
 Je vult 1 UBN (Uniek Bedrijfsnummer) en 1 tot 5 AM91-nummers in en drukt op
-"Controleer". Het programma haalt zelf een bearer-token op bij SKV en vraagt
-per AM91-nummer het certificaat op.
+"Controleer". Het programma doet dan per AM91-nummer twee controles:
 
-Per regel zie je:
-  groen vinkje   = gelukt, status GECERTIFICEERD en nog geldig
-  oranje !       = gelukt, maar let op (status is niet GECERTIFICEERD, of verlopen)
-  rood !         = fout (HTTP-fout zoals 404, lege lijst [], of geen verbinding)
+  1. SKV-certificaat: haalt zelf een bearer-token op bij SKV en vraagt het
+     certificaat op.
+  2. VKI (Voedselketeninformatie): vraagt bij SKV InfoKalf het VKI-formulier
+     op (de antwoorden van de kalverhouder op de 20 vragen, de
+     diergeneesmiddelen en de diernummers).
 
-Dubbelklik op een regel voor het volledige antwoord (JSON). Daar kun je ook
-de certificaat-PDF en de stallijst-PDF opslaan.
+Per regel zie je links het certificaat en rechts de VKI:
+  groen vinkje   = gelukt en in orde
+  oranje !       = gelukt, maar let op
+  rood !         = fout, of iets dat niet mag
+  streepje       = VKI staat uit
+
+Certificaat:
+  oranje         = status is niet GECERTIFICEERD, of verlopen
+  rood           = HTTP-fout zoals 404, lege lijst [], of geen verbinding
+
+VKI (VOORLOPIGE regels, worden nog door de key-user bevestigd):
+  rood           = geen VKI gevonden / fout van SKV / niet "naar waarheid
+                   ingevuld" / vraag 1 niet met JA beantwoord / een dier op
+                   het formulier zonder AM91-nummer
+  oranje         = JA bij een van de vragen 2 t/m 9 / er staan
+                   diergeneesmiddelen op het formulier / er zijn diagnoses
+  Kolom "Zichtkeuring" = ja of nee, volgens vraag 10 t/m 20.
+
+Dubbelklik op een regel voor alle details. Er zijn twee tabbladen:
+  SKV-certificaat  het volledige antwoord (JSON), en knoppen om de
+                   certificaat-PDF en de stallijst-PDF op te slaan.
+  VKI              de gegevens van het formulier, de 20 vragen, de
+                   diergeneesmiddelen, en knoppen om het VKI-formulier als
+                   PDF en het VKI-antwoord als XML op te slaan.
+(Dubbelklik je op een VKI-kolom, dan opent meteen het tabblad VKI.)
+
 Met "Exporteren..." sla je het overzicht op als .txt-bestand.
 
 
@@ -30,70 +55,121 @@ Stap 2. Zip deblokkeren
 
 Stap 3. Uitpakken
         Rechtermuisknop op de zip > "Alles uitpakken..." naar bijvoorbeeld:
-            C:\Tools\SKV-Checker
+            C:\Tools\Partijcontrole-Veal
         Gebruik een map die alleen van jou is (dus niet een gedeelde
-        netwerkschijf!), omdat het wachtwoord in de map komt te staan.
+        netwerkschijf!), omdat de wachtwoorden in de map komen te staan.
 
 Stap 4. Instellingen invullen
         Kopieer appsettings.example.json en noem de kopie appsettings.json.
         (Vergeet je dit, dan doet het programma het bij de eerste start zelf.)
         Klik met de rechtermuisknop op appsettings.json > Openen met >
         Kladblok. Vervang:
-            URL voor de Token          door de URL voor de token
-            URL voor het certificaat   door de URL van het certificaat
-            Gebruikersnaam             door je SKV-gebruikersnaam
-            Wachtwoord                 door je SKV-wachtwoord
+            URL voor de Token                   door de URL voor de token
+            URL voor het certificaat            door de URL van het certificaat
+            Gebruikersnaam                      door je SKV-gebruikersnaam
+            Wachtwoord                          door je SKV-wachtwoord
+        En in het blok "Vki":
+            VUL-HIER-JE-VKI-GEBRUIKERSNAAM-IN   door je VKI-gebruikersnaam
+            VUL-HIER-JE-VKI-WACHTWOORD-IN       door je VKI-wachtwoord
         Laat de aanhalingstekens " staan! Voorbeeld:
             "Username": "Usrxxx123",
         Opslaan (Ctrl+S) en Kladblok sluiten.
 
 Stap 5. (optioneel) Snelkoppeling op het bureaublad
-        Rechtermuisknop op "Start SKV Checker.bat" > Meer opties weergeven >
-        Kopieren naar > Bureaublad (snelkoppeling maken).
+        Rechtermuisknop op "Start Partijcontrole Veal.bat" > Meer opties
+        weergeven > Kopieren naar > Bureaublad (snelkoppeling maken).
+
+
+OVERSTAPPEN VANAF DE SKV CHECKER
+--------------------------------
+Had je de oude "SKV Checker" al? Doe dan dit:
+  1. Pak de nieuwe versie uit in een NIEUWE map, bijvoorbeeld
+         C:\Tools\Partijcontrole-Veal
+  2. Kopieer je oude appsettings.json naar de nieuwe map.
+     Je URL's, gebruikersnaam en wachtwoord blijven gewoon werken.
+  3. Open appsettings.json in Kladblok en plak het blok "Vki" uit
+     appsettings.example.json erin, direct na de regel met "TimeoutSeconds".
+     Let op de komma's: na  "TimeoutSeconds": 30  moet een komma staan, en
+     na het afsluitende  }  van het Vki-blok ook (als er daarna nog iets komt).
+     Vul je VKI-gebruikersnaam en -wachtwoord in.
+     (Zonder Vki-blok werkt het programma zoals vroeger: alleen het
+     certificaat. In de kolom VKI staat dan "uit".)
+  4. Maak je snelkoppeling op het bureaublad opnieuw (stap 5 hierboven).
+     De oude snelkoppeling wijst nog naar de oude map.
+  5. Werkt alles? Dan kun je de oude map SKV-Checker weggooien.
 
 
 GEBRUIKEN
 ---------
-1. Dubbelklik op "Start SKV Checker.bat" (of de snelkoppeling).
+1. Dubbelklik op "Start Partijcontrole Veal.bat" (of de snelkoppeling).
 2. Vul het UBN in.
 3. Vul 1 tot 5 AM91-nummers in (lege vakjes worden overgeslagen).
 4. Druk op "Controleer" (of Enter).
-5. Dubbelklik op een regel voor alle details.
+5. Dubbelklik op een regel voor alle details en de PDF's.
 6. Eventueel "Exporteren..." voor een .txt-bestand.
 
 
 ALS HET NIET WERKT
 ------------------
 * Er gebeurt niets na dubbelklikken
-    Start "Start SKV Checker (met foutmeldingen).bat". Dan blijft er een
-    zwart venster open waarin de foutmelding staat. Stuur die tekst door.
+    Start "Start Partijcontrole Veal (met foutmeldingen).bat". Dan blijft er
+    een zwart venster open waarin de foutmelding staat. Stuur die tekst door.
 
 * "Token ophalen mislukt"
     Controleer gebruikersnaam en wachtwoord in appsettings.json.
     De melding laat zien wat SKV antwoordde voor POST en voor GET.
     Werkt een van beide wel in Postman maar niet hier? Zet TokenMethod dan
     vast op "POST" of "GET".
+    De VKI-controle gaat in dat geval wel gewoon door (eigen inlog).
+
+* "VKI-controle: uit (VKI-inloggegevens niet ingevuld)"
+    Vul in appsettings.json bij "Vki" je VKI-gebruikersnaam en -wachtwoord in.
+
+* "Inloggen bij VKI geweigerd (ERR0002)"
+    De VKI-gebruikersnaam of het -wachtwoord klopt niet, je account heeft geen
+    rechten, of het account is tijdelijk geblokkeerd.
+    LET OP: SKV blokkeert het account 10 minuten na 3 foute pogingen. Het
+    programma probeert het daarom niet opnieuw. Pas appsettings.json aan,
+    wacht bij twijfel 10 minuten, en start het programma opnieuw.
+
+* "Geen VKI gevonden voor dit UBN + AM91 (SKV: ERR0106)"
+    SKV heeft geen VKI-formulier voor deze combinatie. Meestal klopt het
+    AM91-nummer niet (SKV zegt dan "UBN niet gevonden", maar bedoelt de
+    combinatie).
+
+* "UBN ongeldig volgens SKV (ERR0105)"
+    Het UBN zelf klopt niet. De overige AM91-nummers worden dan niet meer
+    bij SKV opgevraagd.
+
+* De VKI-PDF wordt niet gemaakt
+    Het programma gebruikt Microsoft Edge om de PDF te maken. Lukt dat niet,
+    dan kun je het formulier als HTML-bestand openen in de browser en daar
+    zelf kiezen voor Afdrukken > Opslaan als PDF.
 
 * "appsettings.json is geen geldige JSON"
-    Meestal een vergeten aanhalingsteken " of komma. Vergelijk met het
-    voorbeeld hierboven.
+    Meestal een vergeten aanhalingsteken " of komma. Vergelijk met
+    appsettings.example.json.
 
 * Melding over "execution policy" of "is niet digitaal ondertekend"
     IT heeft PowerShell-scripts op je pc dichtgezet. Vraag IT om
-    SKV-Checker.ps1 toe te staan.
+    Partijcontrole-Veal.ps1 toe te staan.
 
 
 BESTANDEN
 ---------
-Start SKV Checker.bat                       - hiermee start je het programma
-Start SKV Checker (met foutmeldingen).bat   - zelfde, maar toont fouten
-SKV-Checker.ps1                             - het programma zelf (PowerShell)
-appsettings.example.json                    - voorbeeld van de instellingen
-appsettings.json                            - jouw adressen, gebruikersnaam, wachtwoord
-                                              (maak je zelf aan, staat niet op GitHub)
-LEESMIJ.txt                                 - dit bestand
+Start Partijcontrole Veal.bat                     - hiermee start je het programma
+Start Partijcontrole Veal (met foutmeldingen).bat - zelfde, maar toont fouten
+Partijcontrole-Veal.ps1                           - het programma zelf (PowerShell)
+appsettings.example.json                          - voorbeeld van de instellingen
+appsettings.json                                  - jouw adressen, gebruikersnamen,
+                                                    wachtwoorden (maak je zelf aan,
+                                                    staat niet op GitHub)
+LEESMIJ.txt                                       - dit bestand
+test\                                             - testbestanden (niet nodig voor
+                                                    gebruik)
 
-Het programma bewaart zelf niets. Het token blijft alleen in het geheugen
-zolang het venster open is.
-
-
+Het programma bewaart zelf niets. Het token en de VKI-gegevens blijven alleen
+in het geheugen zolang het venster open is. Alleen als jij op een knop drukt
+(PDF, XML of Exporteren) wordt er iets opgeslagen. Voor het maken van de
+VKI-PDF wordt heel even een tijdelijk bestand gemaakt; dat wordt direct weer
+verwijderd.
