@@ -1115,9 +1115,9 @@ function Join-Adres($Straat, $Huisnummer, $Toevoeging) {
 }
 
 function Get-VkiBestandsnaam($Formulier, [string]$Ubn, [string]$Extensie) {
-    $am = ($Formulier.Koppelnummers -join '-')
-    if (-not $am) { $am = 'geen-AM91' }
-    $naam = "VKI_$($Ubn)_$($am)_$($Formulier.VkiCode).$Extensie"
+    $houder = ([string]$Formulier.HouderNaam).Trim()
+    if ($houder) { $naam = "VKI Formulier $houder.$Extensie" }
+    else         { $naam = "VKI Formulier $($Ubn)_$($Formulier.VkiCode).$Extensie" }   # reserve als de houdernaam leeg is
     foreach ($c in [IO.Path]::GetInvalidFileNameChars()) { $naam = $naam.Replace([string]$c, '_') }
     return $naam
 }
@@ -1138,7 +1138,7 @@ function New-VkiHtml($Formulier, [datetime]$GeprintOp) {
     [void]$sb.Append(@"
 <!DOCTYPE html>
 <html lang="nl"><head><meta charset="utf-8">
-<title>VKI Formulier $(& $h $f.VkiCode)</title>
+<title>VKI Formulier $(& $h $f.HouderNaam)</title>
 <style>
 @page {
   size: A4;
